@@ -74,6 +74,7 @@ class SensESPApp : public SensESPBaseApp {
   }
   std::shared_ptr<Networking>& get_networking() { return this->networking_; }
   std::shared_ptr<SKWSClient> get_ws_client() { return this->ws_client_; }
+  std::shared_ptr<HTTPServer> get_http_server() { return this->http_server_; }
 
  protected:
   /**
