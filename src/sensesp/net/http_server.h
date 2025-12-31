@@ -142,6 +142,10 @@ class HTTPServer : public FileSystemSaveable {
     handlers_.push_back(handler);
   }
 
+  std::list<std::shared_ptr<HTTPRequestHandler>> &get_handlers() {
+    return handlers_;
+  }
+
  protected:
   bool captive_portal_ = false;
   httpd_handle_t server_ = nullptr;
