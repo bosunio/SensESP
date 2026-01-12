@@ -124,10 +124,8 @@ class DigitalInputCounter : public DigitalInput, public Sensor<int> {
 
   unsigned int read_delay_;
   volatile unsigned int counter_ = 0;
-
- private:
-  int interrupt_type_;
   std::function<void()> interrupt_handler_;
+  int interrupt_type_;
 };
 
 const String ConfigSchema(const DigitalInputCounter& obj);
@@ -163,7 +161,17 @@ class DigitalInputDebounceCounter : public DigitalInputCounter {
                               String config_path = "")
       : DigitalInputCounter(pin, pin_mode, interrupt_type, read_delay,
                             config_path, [this]() { this->handleInterrupt(); }),
-        ignore_interval_ms_{ignore_interval_ms} {}
+        ignore_interval_ms_{ignore_interval_ms} {
+    event_loop()->onInterrupt(pin_, interrupt_type_, interrupt_handler_);
+
+    event_loop()->onRepeat(read_delay_, [this]() {
+      noInterrupts();
+      output_ = counter_;
+      counter_ = 0;
+      interrupts();
+      notify();
+    });
+  }
 
  private:
   void handleInterrupt();
